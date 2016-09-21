@@ -1,25 +1,32 @@
-path <- setwd("~/R/x86_64-pc-linux-gnu-library/3.2/rstudio/R/na czysto WSP")
+path <- setwd("~/Desktop/projekt_wsp/cel_files")
 
 source("http://bioconductor.org/biocLite.R")
-#biocLite(c('hgu95av2.db','gahgu95av2.db'))
+library(BiocInstaller)
+#biocLite(c('hgu95av2.db','gahgu95av2.db','Biobase','affy'))
 library('Biobase')
 library('affy')
 library('hgu95av2.db')
 library('gahgu95av2.db')
-
-pData_path <- file.path(path,'pheno.txt')
+library(dplyr)
+library(tools)
+pData_path <- file.path(path,'/pheno.txt')
 pData <- read.table(pData_path, header = TRUE, sep = "\t")
-
-all(rownames(pData) == colnames(exprs)) #sprawdzenie poprawnosci
-phenoData=new("AnnotatedDataFrame", data = pData)
-phenoData=phenoData[1:4,]
-
 celFiles <- list.celfiles()
+macierze<-file_path_sans_ext(celFiles)
+all(rownames(pData) == colnames(exprs)) #sprawdzenie poprawnosci
+#wyrzucenie wierszy dla ktorych brakuje plikow z pData
+pData<-
+  pData %>% filter(scan %in% macierze)
+
+phenoData=new("AnnotatedDataFrame", data = pData)
+
+
 colnames(phenoData) <- c('simple','annotation','CLASS','Sample scan')
-rownames(phenoData) <- c(celFiles[1:4])
+rownames(phenoData) <- c(celFiles)
 
-abatch <- ReadAffy(filenames=celFiles[1:4])
+abatch <- ReadAffy(filenames=celFiles)
 
+#reannotacja Ferrari:
 abatch@cdfName<-"gaHG_U95AV2"
 abatch@annotation<-"gaHG_U95AV2"
 
@@ -28,7 +35,7 @@ rma <-  expresso(abatch,bgcorrect.method="rma", normalize.method="quantiles",
 
 RMA <- exprs(rma)
 data_RMA <- as.data.frame(RMA) # ramka danych RMA
-colnames(RMA)<-c(celFiles[1:4])
+colnames(RMA)<-c(celFiles)
 
 #tmp <- new ("ExpressionSet", phenoData = phenoData(abatch),
 #            featureData = featureData(abatch),
@@ -42,11 +49,11 @@ rownames(fData) <- c(rownames(RMA))
 featureData <- new("AnnotatedDataFrame",data=fData)
 
 
-experiment <- new("MIAME",name="Emila Manko",
+experiment <- new("MIAME",name="WSP grupa 4",
                           lab="Polsl",
-                          contact="fruzia_juzia",
+                          contact="github",
                           title="Super_eksperyment",
-                         url="www.zombie.pl")
+                         url="https://github.com/BIOgr4/projekt_wsp")
 proto <- data.frame('names'= featureNames(abatch));
 rownames(proto) <- c(rownames(RMA))
 #protocol <- new("AnnotatedDataFrame", data="trol")

@@ -1,5 +1,5 @@
 #source("F1M.R") #kontrola jakosci
-
+source("libraries.R")
 options(shiny.maxRequestSize = 500*1024^2)
 shinyServer(function(input, output){
   

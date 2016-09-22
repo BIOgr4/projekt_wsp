@@ -1,4 +1,4 @@
-source("F1M.R") #kontrola jakosci
+#source("F1M.R") #kontrola jakosci
 
 options(shiny.maxRequestSize = 500*1024^2)
 shinyServer(function(input, output){

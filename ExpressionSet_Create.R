@@ -1,7 +1,7 @@
 path <- setwd("~/Desktop/projekt_wsp/cel_files")
 
-source("http://bioconductor.org/biocLite.R")
-library(BiocInstaller)
+#source("http://bioconductor.org/biocLite.R")
+#library(BiocInstaller)
 #biocLite(c('hgu95av2.db','gahgu95av2.db','Biobase','affy'))
 library('Biobase')
 library('affy')
@@ -21,7 +21,7 @@ pData<-
 phenoData=new("AnnotatedDataFrame", data = pData)
 
 
-colnames(phenoData) <- c('simple','annotation','CLASS','Sample scan')
+colnames(phenoData) <- c('simple annotation','CLASS','Sample',' scan')
 rownames(phenoData) <- c(celFiles)
 
 abatch <- ReadAffy(filenames=celFiles)

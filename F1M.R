@@ -1,6 +1,3 @@
-
-
-
 #działamy wywołując poszczególne funkcje zwracające nam głównie wyniki w postaci różnego rozaju wykresów
 #zmodyfikowane w taki sposób by dało się wybrac zakres "data" jaki nas interesuje w prezentacji wyników
 # poniżej stosowane biblioteki 
@@ -69,12 +66,12 @@ BOXY <- function(X,zakres){
   #name=paste("BOX",zakres,".jpg",sep="")
   #jpeg(name)
   par(mfrow=c(2,1))
-  boxplot(X[,zakres],col=as.numeric(pData(x)$CLASS)+1)
+  boxplot(exprs(X)[,zakres],col=as.numeric(pData(X)$CLASS)+1)
   #dev.off()
   #name=paste("BOXlog",zakres,".jpg",sep="")
   #jpeg(name)
-  y<-log2(X[,zakres])
-  boxplot(y, col=as.numeric(pData(x)$CLASS)+1)
+  y<-log2(exprs(X)[,zakres])
+  boxplot(y, col=as.numeric(pData(X)$CLASS)+1)
   #dev.off()
 }
 

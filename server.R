@@ -1,7 +1,7 @@
 source("F1M.R") #kontrola jakosci
 
 options(shiny.maxRequestSize = 500*1024^2)
-shinyServer(function(input, output){
+shinyServer(function(input, output, session){
   
   ## input data 
   myData <- reactive({
@@ -15,6 +15,30 @@ shinyServer(function(input, output){
     eval(var.name)
   })
   
+  ## measure
+  rangeMax <- reactive({
+    if (!is.null(myData())) { 
+      Data <- myData()
+      myDataExp <- exprs(Data)
+      maxData <- dim(myDataExp)[2]
+    }
+  })
+
+  #output$max <- renderUI({
+  #  if (!is.null(myData())) { 
+  #    rMax <- rangeMax()
+  #    browser()
+  #    sliderInput("max", "Zakres:", min=1, max=rMax, value=rMax, step=1)
+  #  }
+  #})
+  #}
+  
+  observe({
+    if (!is.null(myData())) { 
+      rMax <- rangeMax()
+      updateSliderInput(session, "range", value = c(1,rMax), min = 1, max = rMax, step = 1)
+    }
+  })
   ######################################### Raw data ############################################ 
   output$dataMessage <- renderUI ({
     if (is.null(myData())) { 
@@ -29,55 +53,50 @@ shinyServer(function(input, output){
     }
   })
   
+  
   ######################################### Results ############################################  
-    
   
-  output$results <- renderUI ({
-    if (is.null(myData())) {
-      br()
-      h3("Proszę wrzucić plik ExpressionSet")
-    }
-  })  
-  
-  output$results <- renderUI ({
+  #output$results <- renderUI ({
+  observe ({
     if (!is.null(myData())) {
       myDataExp <- exprs(myData())
-      maxData <- dimData()
+      #maxData <- dim(Data)
       
   ################################### Quality ###################################################
         
-        if (input$option == "quality") {
+        if (input$menu == "quality") {
+          #browser()
           output$plots <- renderPlot({
             if (input$plot_type == "HEXBIN") {
-              HB(myDataExp, c(input$range[[1]]:input$range[[2]]))
-              #img(src = name[1], align="center")
+              HB(myDataExp, input$range)
             }
             else if (input$plot_type == "MVA"){
-              MVA(myDataExp, c(input$range[[1]]:input$range[[2]]))
+              MVA(myDataExp, c(input$range[1]:input$range[2]))
             }
             else if (input$plot_type == "BOXPLOT") {
-              BOXY(myDataExp, c(input$range[[1]]:input$range[[2]]))
+              BOXY(myData(), c(input$range[1]:input$range[2]))
             }
             else if (input$plot_type == "SCATTER PLOT") {
-              SCATTER(myDataExp, c(input$range[[1]]:input$range[[2]]))
+              browser()
+              SCATTER(myDataExp, c(input$range[1]:input$range[2]))
             }
             else if (input$plot_type == "HEATMAP") {
-              HM(myDataExp,input$range[[2]])
+              HM(myDataExp,input$range[2])
             }
             else if (input$plot_type == "MA PLOT") {
-              MAPLOTS(mydata,c(input$range[[1]]:input$range[[2]]))
+              MAPLOTS(myData(),c(input$range[1]:input$range[2]))
             }
             
           })
           
         }
         ################################### Classification  ############################################
-        else if (input$option == "class") {
+        else if (input$menu == "class") {
           
         }
         
         ################################### Clasterization  ############################################
-        else if (input$option == "clast") {
+        else if (input$menu == "clast") {
           
         }
       }

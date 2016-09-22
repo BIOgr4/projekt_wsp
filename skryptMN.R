@@ -1,15 +1,15 @@
-setwd('D:/Magsterka/WSP/ftp')
-getwd()
+#setwd('D:/Magsterka/WSP/ftp')
+#getwd()
 
 source("http://bioconductor.org/biocLite.R")
 biocLite()
 biocLite(c("affy"))
 library("affy")
-biocLite(c("hgu95av2.db"))
+#biocLite(c("hgu95av2.db"))
 library("hgu95av2.db")
-biocLite(c("gahgu95av2.db"))
+#biocLite(c("gahgu95av2.db"))
 library("gahgu95av2.db")
-biocLite(c("hgu95av2cdf"))
+#biocLite(c("hgu95av2cdf"))
 library("hgu95av2cdf")
 biocLite(c("hgu95av2.db"))
 library("hgu95av2.db")
@@ -42,7 +42,7 @@ esetrma <- expresso(dane, bgcorrect.method="rma",
                     summary.method="medianpolish")
 
 
-#wyci¹gniêcie danych
+#wyci?gni?cie danych
 rma=exprs(esetrma)
 
 
@@ -50,21 +50,21 @@ rma=exprs(esetrma)
 plotDensity(rma, main='Histogram dla danych znormalizowane algorytmem RMA', ylab = "density", xlab="Intensity", type="l", col=1:6, na.rm = TRUE)
 legend(x="topright",legend=c("E08_HCT116p_C_1h.CEL","E08_HCT116p_ICM_12h.CEL", 'E09_HCT116p_C_1h.CEL', 'E09_HCT116p_ICM_12h.CEL'),pch=15,col=c(1:4),bty="n")
 
-boxplot(rma, main='Wykresy pude³kowe dla znormalizowanych danych')
+boxplot(rma, main='Wykresy pude?kowe dla znormalizowanych danych')
 
 
 
-#krotnoœæ np miêdzy 1 i 2
+#krotno?? np mi?dzy 1 i 2
 kr_rma=(rma[,2]-rma[,1])
 
-#wykresy zmian krotnoœci
-plot(kr_rma, main='Krotnoœci zmian')
+#wykresy zmian krotno?ci
+plot(kr_rma, main='Krotno?ci zmian')
 
 #wielokrotny test t
-p_val=0.05/nrow(dane@featureData@data) #0.05/iloœæ sond
+p_val=0.05/nrow(dane@featureData@data) #0.05/ilo?? sond
 t_rma=rowttests(rma, tstatOnly = FALSE)
 mnt=t(t_rma[3]<p_val)
-#wybranie genów ró¿nicuj¹cych
+#wybranie gen?w r??nicuj?cych
 gen=which(mnt==TRUE)
 roz=mnt[1,gen]
 
@@ -78,7 +78,7 @@ xx <- as.list(x[mapped_probes])
 if(length(xx) > 0) {
   # Get the ENTREZID for the first five probes
   xx[1:5]
-  # Get the first one
+  # Get the first oney
   xx[[1]]
 }
 

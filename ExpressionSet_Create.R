@@ -27,7 +27,7 @@ rownames(phenoData) <- c(celFiles)
 abatch <- ReadAffy(filenames=celFiles)
 
 #reannotacja Ferrari:
-abatch@cdfName<-"gahgu95av2.db"
+abatch@cdfName<-"gaHG_U95AV2"
 abatch@annotation<-"gahgu95av2.db"
 
 rma <-  expresso(abatch,bgcorrect.method="rma", normalize.method="quantiles",

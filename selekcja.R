@@ -12,7 +12,9 @@ for(i in 1:nrow(ekspresje))
   fold[i]=mean(ekspresje[i,ExampleSet@phenoData@data$CLASS=="NORMAL"])-mean(ekspresje[i,ExampleSet@phenoData@data$CLASS!="NORMAL"])
   }
 
+prog=1
+
 roznicujace=vector(length=nrow(ekspresje))
-roznicujace[pwart>0.05&abs(fold)>2]=TRUE
+roznicujace[pwart>0.05&abs(fold)>prog]=TRUE
 
 indeksy_roznicujace=which(roznicujace)

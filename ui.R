@@ -13,19 +13,18 @@ shinyUI(fluidPage(
                         tabPanel("Kontrola jakości",value="quality")),
              tabPanel("Pobieranie wyników")),
   
-      
-  radioButtons("filtration", "Filtracja", c("ON","OFF")),
+   
+  radioButtons("filtration", "Filtracja", c("ON","OFF"), selected="OFF"),
   conditionalPanel(condition="input.filtration == 'ON'",
         selectInput("filtration_type", label="Rodzaj filtracji:",
                                    choices = c("PRZEPUSTOWA","TEST T"), 
-                                   selected = "PRZEPUSTOWA"),
-    fluidRow(
-        conditionalPanel(condition="input.filtration_type == 'PRZEPUSTOWA'"),
+                                   selected = "PRZEPUSTOWA")),
+  fluidRow(   
+        conditionalPanel(condition="input.filtration_type == 'PRZEPUSTOWA' & input.filtration == 'ON'",
       column(6,
         sliderInput("cutoff","Odcięcie", min=0.1, max=0.9, value=0.5, step=0.1)),
       column(6,
-        radioButtons("mode", "Rodzaj przepustu:", choices=c("UP","DOWN"), selected="UP"))
-        ),
+        radioButtons("mode", "Rodzaj przepustu:", choices=c("UP","DOWN"), selected="UP"))),
   
       
   

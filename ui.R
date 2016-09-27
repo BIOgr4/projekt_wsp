@@ -42,7 +42,7 @@ shinyUI(fluidPage(
           column(4, h5("Skala"), checkboxInput("scale", "logarytmiczna", FALSE),
                     h5("Kolejność"), checkboxInput("order", "zmniejszająca się", FALSE)),
           
-          column(12, actionButton("start","Go!"), actionButton("stap","Stop"), plotOutput("plots")))
+          column(12, actionButton("start","Go!"), actionButton("stap","Stop"), plotOutput("plots", height = "900px")))
       
 
 )

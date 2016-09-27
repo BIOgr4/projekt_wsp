@@ -19,46 +19,39 @@ shinyServer(function(input, output, session){
   ## measure
   rangeMax <- reactive({
     if (!is.null(myData())) { 
-      Data <- myData()
-      myDataExp <- exprs(Data)
+      myDataExp <- exprs(myData())
       maxData <- dim(myDataExp)[2]
     }
   })
   
+  # Filtracja
   dataFiltered <- reactive({
-    observe({
-      if (!is.null(myData())) {
+     if (!is.null(myData())) {
         if (input$filtration == "ON") {
           if (input$filtration_type == "PRZEPUSTOWA") {
-            filtered <- filtration2(myData(),input$cutoff, input$mode)
+            filtered <- filtracja2(myData(), input$cutoff, input$mode)
+          } else if (input$filtration_type == "TEST T") {
+            
           }
         } 
-        else {
+        else if (input$filtration == "OFF") {
             filtered <- myData()
         }
-      }
-    })
-    return(filtered)
+     }
   })
-
-  #output$max <- renderUI({
-  #  if (!is.null(myData())) { 
-  #    rMax <- rangeMax()
-  #    browser()
-  #    sliderInput("max", "Zakres:", min=1, max=rMax, value=rMax, step=1)
-  #  }
-  #})
-  #}
+  
   
   observe({
     if (!is.null(myData())) { 
       rMax <- rangeMax()
-      updateSliderInput(session, "range", value = c(2,rMax), min = 2, max = rMax, step = 1)
+      updateSliderInput(session, "range", value = c(1,rMax), min = 1, max = rMax, step = 1)
     }
   })
+  
   ######################################### Raw data ############################################ 
+  
   output$dataMessage <- renderUI ({
-    if (is.null(myData())) { 
+    if (is.null(dataFiltered())) { 
       br()
       h3("Proszę wrzucić plik ExpressionSet")
     }
@@ -66,23 +59,20 @@ shinyServer(function(input, output, session){
   
   output$abatch <- renderTable({
     if (!is.null(myData())) {
-      exprs(myData())
+        exprs(dataFiltered())
     }
-  })
+  }, include.rownames=TRUE)
   
   
   ######################################### Results ############################################  
   
-  #output$results <- renderUI ({
   observe ({
-    if (!is.null(myData())) {
-      myDataExp <- exprs(myData())
-      #maxData <- dim(Data)
+    if (!is.null(dataFiltered())) {
+      myDataExp <- exprs(dataFiltered())
       
   ################################### Quality ###################################################
         
         if (input$menu == "quality") {
-          
             observeEvent(input$start, {
             output$plots <- renderPlot({
               if (input$plot_type == "HEXBIN") {
@@ -92,7 +82,7 @@ shinyServer(function(input, output, session){
                 MVA(myDataExp, c(input$range[1]:input$range[2]),input$scale)
               }
               else if (input$plot_type == "BOXPLOT") {
-                BOXY(myData(), c(input$range[1]:input$range[2]),input$scale)
+                BOXY(dataFiltered(), c(input$range[1]:input$range[2]),input$scale)
               }
               else if (input$plot_type == "SCATTER PLOT") {
                 SCATTER(myDataExp, c(input$range[1]:input$range[2]),input$scale)
@@ -101,13 +91,13 @@ shinyServer(function(input, output, session){
                 HM(myDataExp,c(input$range[1]:input$range[2]),input$order)
               }
               else if (input$plot_type == "MA PLOT") {
-                MAPLOTS(myData(),c(input$range[1]:input$range[2]),input$scale)
+                MAPLOTS(dataFiltered(),c(input$range[1]:input$range[2]),input$scale)
               }
               else if (input$plot_type == "HISTOGRAM") {
                 rM(myDataExp, c(input$range[1]:input$range[2]),0.5)
               }
               else if (input$plot_type == "DENSITY PLOT") {
-                rM(myData(), c(input$range[1]:input$range[2]),input$scale)
+                rM(dataFiltered(), c(input$range[1]:input$range[2]),input$scale)
               }
             })
             })
@@ -131,17 +121,7 @@ shinyServer(function(input, output, session){
     
     
   ################################### Filtration ###################################################
-        else if (input$menu == "filtration") {
-          if (input$filtration_type == "cutoff") {
-            
-            filtered <- filtracja2(myData())
-            eval(var.name)
-            #exprs(filtered)
-          }
-          else if (input$filtration_type == "test T") {
-            
-          }
-        }
+        
   
   })
  

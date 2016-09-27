@@ -3,16 +3,22 @@ shinyUI(fluidPage(
   
   fileInput("file_ES", label = h4("Wprowadź plik:"), multiple = FALSE, accept = c(".Rda")),
   
+  
   navbarPage("Menu", id="menu",
              tabPanel("Opis"),
              tabPanel("Dane",value="abatch"),
              navbarMenu("Opcje", 
-                        tabPanel("Filtracja", value="filtration"),
                         tabPanel("Klasyfikacja", value="class"),
                         tabPanel("Klasteryzacja", value="clast"),                             
                         tabPanel("Kontrola jakości",value="quality")),
              tabPanel("Pobieranie wyników")),
+  
       
+  radioButtons("filtration", "Filtracja", c("ON","OFF")),
+  conditionalPanel(condition="input.filtration == 'ON'",
+        selectInput("filtration_type", label="Rodzaj filtracji:",
+                                   choices = c("PRZEPUSTOWA","TEST T"), 
+                                   selected = "PRZEPUSTOWA")),
       
   fluidRow(
       conditionalPanel(condition="input.menu == 'abatch'",
@@ -29,13 +35,8 @@ shinyUI(fluidPage(
           column(4, h5("Skala"), checkboxInput("scale", "logarytmiczna", FALSE),
                     h5("Kolejność"), checkboxInput("order", "zmniejszająca się", FALSE)),
           
-          column(12, actionButton("start","Go!"), actionButton("stap","Stop"), plotOutput("plots"))),
+          column(12, actionButton("start","Go!"), actionButton("stap","Stop"), plotOutput("plots")))
       
-      conditionalPanel(condition="input.menu == 'filtration'",
-          column(4, selectInput("filtration_type",
-                                label="Rodzaj filtracji:",
-                                choices = c("cutoff","test T","ANNOVA"), 
-                                selected="test T")))
 
 )
 ))

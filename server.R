@@ -1,5 +1,4 @@
 source("F1M.R") #kontrola jakosci
-source("filtracja2.R") # filtracja
 
 options(shiny.maxRequestSize = 500*1024^2)
 shinyServer(function(input, output, session){
@@ -25,14 +24,7 @@ shinyServer(function(input, output, session){
     }
   })
 
-  #output$max <- renderUI({
-  #  if (!is.null(myData())) { 
-  #    rMax <- rangeMax()
-  #    browser()
-  #    sliderInput("max", "Zakres:", min=1, max=rMax, value=rMax, step=1)
-  #  }
-  #})
-  #}
+  
   
   observe({
     if (!is.null(myData())) { 
@@ -113,21 +105,9 @@ shinyServer(function(input, output, session){
         }
       }
     
-    
-  ################################### Filtration ###################################################
-        else if (input$menu == "filtration") {
-          if (input$filtration_type == "cutoff") {
-            
-            filtered <- filtracja2(myData())
-            eval(var.name)
-            #exprs(filtered)
-          }
-          else if (input$filtration_type == "test T") {
-            
-          }
-        }
-  
   })
+  ################################### Filtration ###################################################
+        
  
   
   ######################################### Download ############################################  

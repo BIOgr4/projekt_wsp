@@ -18,9 +18,17 @@ shinyUI(fluidPage(
   conditionalPanel(condition="input.filtration == 'ON'",
         selectInput("filtration_type", label="Rodzaj filtracji:",
                                    choices = c("PRZEPUSTOWA","TEST T"), 
-                                   selected = "PRZEPUSTOWA")),
+                                   selected = "PRZEPUSTOWA"),
+    fluidRow(
+        conditionalPanel(condition="input.filtration_type == 'PRZEPUSTOWA'"),
+      column(6,
+        sliderInput("cutoff","Odcięcie", min=0.1, max=0.9, value=0.5, step=0.1)),
+      column(6,
+        radioButtons("mode", "Rodzaj przepustu:", choices=c("UP","DOWN"), selected="UP"))
+        ),
+  
       
-  fluidRow(
+  
       conditionalPanel(condition="input.menu == 'abatch'",
         column(12, uiOutput("dataMessage"), textOutput("dim"),tableOutput("abatch"))), 
       

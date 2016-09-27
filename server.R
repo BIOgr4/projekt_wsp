@@ -24,6 +24,22 @@ shinyServer(function(input, output, session){
       maxData <- dim(myDataExp)[2]
     }
   })
+  
+  dataFiltered <- reactive({
+    observe({
+      if (!is.null(myData())) {
+        if (input$filtration == "ON") {
+          if (input$filtration_type == "PRZEPUSTOWA") {
+            filtered <- filtration2(myData(),input$cutoff, input$mode)
+          }
+        } 
+        else {
+            filtered <- myData()
+        }
+      }
+    })
+    return(filtered)
+  })
 
   #output$max <- renderUI({
   #  if (!is.null(myData())) { 

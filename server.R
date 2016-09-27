@@ -59,7 +59,7 @@ shinyServer(function(input, output, session){
   
   output$abatch <- renderTable({
     if (!is.null(myData())) {
-      exprs(dataFiltered())
+        exprs(dataFiltered())
     }
   }, include.rownames=TRUE)
   

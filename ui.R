@@ -14,7 +14,7 @@ shinyUI(fluidPage(
              tabPanel("Pobieranie wyników")),
   
    
-  radioButtons("filtration", "Filtracja", c("ON","OFF"), selected="ON"),
+  radioButtons("filtration", "Filtracja", c("ON","OFF"), selected="OFF"),
   conditionalPanel(condition="input.filtration == 'ON'",
         selectInput("filtration_type", label="Rodzaj filtracji:",
                                    choices = c("PRZEPUSTOWA","TEST T"), 

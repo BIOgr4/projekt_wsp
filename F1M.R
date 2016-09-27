@@ -6,53 +6,35 @@
 library("affyPLM")
 library("affy")
 library("hexbin")
-#library("geneplotter")
+library("geneplotter")
 library("RColorBrewer")
 library("limma")
 
 
-#F1M <- function(x){
-#  show(x)
-#  dim(exprs(x))
-#  names(pData(x))
-#  return(x)
-#}
-
-
-MVA <-function(X,zakres){
-  #MVA PLOTS
-  #name=paste("MVA",zakres,".jpg",sep="")
-  #jpeg(name)
-  mva.pairs(X[,zakres])
-  #dev.off()
-  #name=paste("MVAf",zakres,".jpg",sep="")
-  #jpeg(name)
-  mva.pairs(X[,zakres],log.it=FALSE)
-  #dev.off()
+MVA <-function(X,zakres,skala){
+  if (isTRUE(skala)) mva.pairs(X[,zakres])
+  
+  else if (!isTRUE(skala)) mva.pairs(X[,zakres],log.it=FALSE)
 }
 
 rM <- function(X,zakres,parametr){ #4 wykresy
   #rM - HIST
   rM <- apply(X[,zakres],1,mad)
-  #name=paste("rM",zakres,".jpg",sep="")
-  #jpeg(name)
+  par(mfrow=c(2,2))
   hist(rM)
-  #dev.off()
-  #name=paste("rM",zakres,parametr,".jpg",sep="")
-  #jpeg(name)
-  rM2 <- X[rM>parametr,]
-  #dim(rM2)
+  
+  rM2 <- X[rM>parametr,zakres]
   hist(rM2)
-  #dev.off()
 }
 
-HB <- function(X,zakres){
+HB <- function(X,zakres,skala){
   ## HEXBIN
-  #name=paste("HB",zakres,".jpg",sep="")
-  #jpeg(name)
-  hb<-hexbin(log2(X)[,zakres],xbins=50)
+  if (isTRUE(skala)) {
+    hb<-hexbin(log2(X)[,zakres],xbins=50)
+  } else if (!isTRUE(skala)) {
+    hb<-hexbin(X[,zakres],xbins=50)
+  }
   plot(hb, colramp=colorRampPalette(brewer.pal(9, "YlGnBu")[-1]))
-  #dev.off()
 }
 
 tabelaklas<- function(x){
@@ -61,109 +43,66 @@ tabelaklas<- function(x){
 }
 
 
-BOXY <- function(X,zakres){
+BOXY <- function(X,zakres,skala){
   #BOXPLOT-y
-  #name=paste("BOX",zakres,".jpg",sep="")
-  #jpeg(name)
   par(mfrow=c(2,1))
-  boxplot(exprs(X)[,zakres],col=as.numeric(pData(X)$CLASS)+1)
-  #dev.off()
-  #name=paste("BOXlog",zakres,".jpg",sep="")
-  #jpeg(name)
-  y<-log2(exprs(X)[,zakres])
+  if (isTRUE(skala)) {
+    y<-log2(exprs(X)[,zakres])}
+  else if (!isTRUE(skala)) {
+    y<-exprs(X)[,zakres]
+  }
   boxplot(y, col=as.numeric(pData(X)$CLASS)+1)
-  #dev.off()
+ 
 }
 
-SCATTER <-function(X,zakres){
+SCATTER <-function(X,zakres,skala){
   #SCATTERPLOT-y
-  #name=paste("SCT",zakres,".jpg",sep="")
-  #jpeg(name)
+  
   par(mfrow=c(3,1))
-  plot(X[,zakres], pch = ".", main = "x")
-  #dev.off()
-  
-  y<-log2(X[,zakres])
-  #name=paste("SCTlog",zakres,".jpg",sep="")
-  #jpeg(name)
+  if (isTRUE(skala)) {
+    y<-log2(X[,zakres])
+  } else if (!isTRUE(skala)){
+    y<-X[,zakres]
+  }
   plot(y, pch = ".", main = "x")
-  #dev.off()
-  
-  #name=paste("SCTlogHIST",zakres,".jpg",sep="")
-  #jpeg(name)
-  #histogramy
-  hist(y[,zakres])
-  #dev.off()
+  hist(y)
 }
 
-
-HEAT <- function(x,X,zakres){ # nie dziala
-  name=paste("HEAT.jpg",sep="")
-  jpeg(name)
-  design <- model.matrix(~factor(x$CLASS))
-  y<-log2(X)
-  fit <- lmFit(y, design)
-  ebayes <- eBayes(fit)
-  tab <- topTable(ebayes, coef=2, adjust="fdr", n=150)
-  heatmap(y[rownames(tab),zakres])
-  dev.off()
-  #selected na podstawie p-value <0.05
-  name=paste("HEATsel.jpg",sep="")
-  jpeg(name)
-  selected<-p.adjust(ebayes$p.value[,2])<0.05
-  esetSel<-y[selected,]
-  heatmap(y[rownames(esetSel),zakres],col=topo.colors(100))
-  dev.off()
-}
-
-HM<- function(X,ile){ #maxx
+HM<- function(X,zakres,order){
+  # heatmap
   rsd <- apply(X, 1, sd)
-  sel <- order(rsd, decreasing = TRUE)[1:ile] #najwyzsze
-  #name=paste("HMmax.jpg",sep="")
-  #jpeg(name)
-  heatmap(X[sel, ])
-  #dev.off()
   
-  #name=paste("HMmin.jpg",sep="")
-  #jpeg(name)
-  sel2 <- order(rsd, decreasing = FALSE)[1:ile] #najnizsze
-  heatmap(X[sel2, ])
-  #dev.off()
-}
-
-PCCA <-function(x,X,zakres){ #????????
-  color=c('green','red','blue', 'red')
-  data.PC=prcomp(t(X),scale.=TRUE)
-  name=paste("PCA",zakres,".jpg",sep="")
-  jpeg(name)
-  plot(data.PC$x[zakres],col=color)
-  dev.off()
+  if (isTRUE(order)) {
+    sel <- order(rsd, decreasing = TRUE)[1:100]
+  } else if (!isTRUE(order)) {
+    sel <- order(rsd, decreasing = FALSE)[1:100] 
+  }
+  heatmap(X[sel,zakres], col=topo.colors(100))
 }
 
 
-DEN <- function(x,zakres){#### nie dziala funkcja density plot
+DEN <- function(x,zakres,skala){
   #density plot
-  name=paste("Density",zakres,".jpg",sep="")
-  jpeg(name)
-  df <- data.frame(Expression=as.vector(exprs(x)),
-                   Sample=sampleNames(x)[col(x)])
-  densityplot(~log2(Expression)|Sample, df, plot.points=FALSE)
-  dev.off()
+  df <- data.frame(Expression=as.vector(exprs(x)), Sample=sampleNames(x)[col(x)])
+  if (isTRUE(scale)) {
+    EXP<-log2(Expression)
+  } else if (!isTRUE(scale)) {
+    EXP<-Expression
+  }
+  densityplot(~EXP|Sample, df, plot.points=FALSE, ylab = "density", xlab="intensity")
+  legend(c(Sample))
 }
 
 
-MAPLOTS <- function(x,zakres){ #,REF){
+MAPLOTS <- function(x,zakres, skala){
   #Create MA plots using a reference array 
-  #name=paste("MAT",zakres,".jpg",sep="")
-  #jpeg(name)
   par(mfrow=c(4,1))
-  MAplot(x[,zakres],pch=".",main="vs pseudo-median reference chip",pairs=TRUE)
-  #dev.off()
-  
+  if (isTRUE(skala)) {
+    MAplot(x[,zakres],pch=".",logMode=T,pairs=TRUE)
+  } else if (!isTRUE(skala)) {
+    MAplot(x[,zakres],pch=".",logMode=F,pairs=TRUE)
+  }
   return(MAplot(x,plot.method="smoothScatter"))
-  
-  #return(MAplot(x,plot.method="smoothScatter")) #referencyjn? jest pierwsza
-  
 }
 
 

@@ -1,4 +1,5 @@
 source("F1M.R") #kontrola jakosci
+source("filtracja2.R") # filtracja
 
 options(shiny.maxRequestSize = 500*1024^2)
 shinyServer(function(input, output, session){
@@ -36,7 +37,7 @@ shinyServer(function(input, output, session){
   observe({
     if (!is.null(myData())) { 
       rMax <- rangeMax()
-      updateSliderInput(session, "range", value = c(1,rMax), min = 1, max = rMax, step = 1)
+      updateSliderInput(session, "range", value = c(2,rMax), min = 2, max = rMax, step = 1)
     }
   })
   ######################################### Raw data ############################################ 
@@ -48,7 +49,7 @@ shinyServer(function(input, output, session){
   })
   
   output$abatch <- renderTable({
-    if (!is.null(myData())) { 
+    if (!is.null(myData())) {
       exprs(myData())
     }
   })
@@ -65,31 +66,42 @@ shinyServer(function(input, output, session){
   ################################### Quality ###################################################
         
         if (input$menu == "quality") {
-          #browser()
-          output$plots <- renderPlot({
-            if (input$plot_type == "HEXBIN") {
-              HB(myDataExp, input$range)
-            }
-            else if (input$plot_type == "MVA"){
-              MVA(myDataExp, c(input$range[1]:input$range[2]))
-            }
-            else if (input$plot_type == "BOXPLOT") {
-              BOXY(myData(), c(input$range[1]:input$range[2]))
-            }
-            else if (input$plot_type == "SCATTER PLOT") {
-              browser()
-              SCATTER(myDataExp, c(input$range[1]:input$range[2]))
-            }
-            else if (input$plot_type == "HEATMAP") {
-              HM(myDataExp,input$range[2])
-            }
-            else if (input$plot_type == "MA PLOT") {
-              MAPLOTS(myData(),c(input$range[1]:input$range[2]))
-            }
-            
-          })
           
-        }
+            observeEvent(input$start, {
+            output$plots <- renderPlot({
+              if (input$plot_type == "HEXBIN") {
+                HB(myDataExp, input$range[1]:input$range[2],input$scale)
+              }
+              else if (input$plot_type == "MVA"){
+                MVA(myDataExp, c(input$range[1]:input$range[2]),input$scale)
+              }
+              else if (input$plot_type == "BOXPLOT") {
+                BOXY(myData(), c(input$range[1]:input$range[2]),input$scale)
+              }
+              else if (input$plot_type == "SCATTER PLOT") {
+                SCATTER(myDataExp, c(input$range[1]:input$range[2]),input$scale)
+              }
+              else if (input$plot_type == "HEATMAP") {
+                HM(myDataExp,c(input$range[1]:input$range[2]),input$order)
+              }
+              else if (input$plot_type == "MA PLOT") {
+                MAPLOTS(myData(),c(input$range[1]:input$range[2]),input$scale)
+              }
+              else if (input$plot_type == "HISTOGRAM") {
+                rM(myDataExp, c(input$range[1]:input$range[2]),0.5)
+              }
+              else if (input$plot_type == "DENSITY PLOT") {
+                rM(myData(), c(input$range[1]:input$range[2]),input$scale)
+              }
+            })
+            })
+            observeEvent(input$stap, {
+              output$plots <- renderPlot({
+                return()
+              })
+            })
+          }
+          
         ################################### Classification  ############################################
         else if (input$menu == "class") {
           
@@ -100,12 +112,22 @@ shinyServer(function(input, output, session){
           
         }
       }
-    })
     
-   
     
+  ################################### Filtration ###################################################
+        else if (input$menu == "filtration") {
+          if (input$filtration_type == "cutoff") {
+            
+            filtered <- filtracja2(myData())
+            eval(var.name)
+            #exprs(filtered)
+          }
+          else if (input$filtration_type == "test T") {
+            
+          }
+        }
   
- 
+  })
  
   
   ######################################### Download ############################################  

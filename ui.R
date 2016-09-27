@@ -1,39 +1,41 @@
 shinyUI(fluidPage(
   titlePanel("Analiza mikromacierzowa"),
   
-  sidebarLayout(
-    sidebarPanel(
-      fileInput("file_ES", label = h4("Wprowadź plik:"), multiple = FALSE, accept = c(".Rda")),
+  fileInput("file_ES", label = h4("Wprowadź plik:"), multiple = FALSE, accept = c(".Rda")),
+  
+  navbarPage("Menu", id="menu",
+             tabPanel("Opis"),
+             tabPanel("Dane",value="abatch"),
+             navbarMenu("Opcje", 
+                        tabPanel("Filtracja", value="filtration"),
+                        tabPanel("Klasyfikacja", value="class"),
+                        tabPanel("Klasteryzacja", value="clast"),                             
+                        tabPanel("Kontrola jakości",value="quality")),
+             tabPanel("Pobieranie wyników")),
       
-      selectInput("option", "Opcje:", c("Dane"="raw",
-                                        "Klasteryzacja"="clast",
-                                        "Klasyfikacja"="class",
-                                        "Kontrola jakości"="quality"),
-                                        selected="quality", multiple=FALSE),
-    
-      conditionalPanel(condition="input.option == 'quality'",
-        radioButtons("plot_type", label="Rodzaj wykresu:",
-                                  choices = c("MVA","HEXBIN","BOXPLOT","SCATTER PLOT","HEATMAP","MA PLOT"), 
-                                  selected="MVA"),
-        
-     
-    
-    sliderInput("range", "Zakres danych:",
-                min = 1, max = 4, value = c(1,4), step= 1))
-  
-  
-  
-),
+      
+  fluidRow(
+      conditionalPanel(condition="input.menu == 'abatch'",
+        column(12, uiOutput("dataMessage"), textOutput("dim"),tableOutput("abatch"))), 
+      
+      conditionalPanel(condition="input.menu == 'quality'",
+          column(4, selectInput("plot_type",
+                                label="Rodzaj wykresu:",
+                                choices = c("MVA","HEXBIN","BOXPLOT","SCATTER PLOT","HEATMAP","MA PLOT","HISTOGRAM","DENSITY PLOT"), 
+                                selected="BOXPLOT")),
+          column(4, sliderInput("range", "Zakres danych:",
+                                min = 1, max = 3 , value = c(1,3), step= 1)),
+                    uiOutput("max"),
+          column(4, h5("Skala"), checkboxInput("scale", "logarytmiczna", FALSE),
+                    h5("Kolejność"), checkboxInput("order", "zmniejszająca się", FALSE)),
+          
+          column(12, actionButton("start","Go!"), actionButton("stap","Stop"), plotOutput("plots"))),
+      
+      conditionalPanel(condition="input.menu == 'filtration'",
+          column(4, selectInput("filtration_type",
+                                label="Rodzaj filtracji:",
+                                choices = c("cutoff","test T","ANNOVA"), 
+                                selected="test T")))
 
-mainPanel(
-  tabsetPanel(type = "pills",
-              tabPanel("Opis"),
-              tabPanel("Dane",uiOutput("dataMessage"),textOutput("dim"),tableOutput("abatch")),
-              #tabPanel("Classification"),
-              #tabPanel("Clasterization"),                             
-              #tabPanel("Wykresy",imageOutput("image")),
-              tabPanel("Wyniki", uiOutput("resultsMessage"), uiOutput("results"),plotOutput("plots")),
-              tabPanel("Pobieranie wyników"))
-)
 )
 ))

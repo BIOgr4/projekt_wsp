@@ -42,7 +42,13 @@ shinyUI(fluidPage(
           column(4, h5("Skala"), checkboxInput("scale", "logarytmiczna", FALSE),
                     h5("Kolejność"), checkboxInput("order", "zmniejszająca się", FALSE)),
           
-          column(12, actionButton("start","Go!"), actionButton("stap","Stop"), plotOutput("plots", height = "900px")))
+          column(12, actionButton("start","Go!"), actionButton("stap","Stop"), plotOutput("plots", height = "900px"))),
+      
+      conditionalPanel(condition="input.menu == 'class'",
+          column(4, selectInput("type", label="Rodzaj klasyfikacji:",
+                                        choices = c("DRZEWA LOSOWE"), 
+                                        selected="DRZEWA LOSOWE")),    
+          column(8, plotOutput("forests", height = "600px")))
       
 
 )

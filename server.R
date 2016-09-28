@@ -1,5 +1,7 @@
 source("F1M.R") #kontrola jakosci
 source("filtracja2.R") # filtracja
+source("Random_Forest.R") # klasyfikacja
+source("biblioteki.R") # biblioteki
 
 options(shiny.maxRequestSize = 500*1024^2)
 shinyServer(function(input, output, session){
@@ -59,7 +61,10 @@ shinyServer(function(input, output, session){
   
   output$abatch <- renderTable({
     if (!is.null(myData())) {
+     # withProgress( message="Trwa wczytywanie danych..", {
         exprs(dataFiltered())
+        #Sys.sleep(25)
+    #})
     }
   }, include.rownames=TRUE)
   
@@ -110,7 +115,14 @@ shinyServer(function(input, output, session){
           
         ################################### Classification  ############################################
         else if (input$menu == "class") {
-          
+          if (input$type == "DRZEWA LOSOWE") {
+             verbatimTextOutput(Random_Forest(dataFiltered()))
+            
+            
+            output$forests <- renderPlot ({
+              Random_Forest(dataFiltered())
+            })
+          }
         }
         
         ################################### Clasterization  ############################################
@@ -118,10 +130,7 @@ shinyServer(function(input, output, session){
           
         }
       }
-    
-    
-  ################################### Filtration ###################################################
-        
+   
   
   })
  

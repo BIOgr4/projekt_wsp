@@ -2,14 +2,6 @@
 #zmodyfikowane w taki sposób by dało się wybrac zakres "data" jaki nas interesuje w prezentacji wyników
 # poniżej stosowane biblioteki 
 
-#library("ALL")
-library("affyPLM")
-library("affy")
-library("hexbin")
-library("geneplotter")
-library("RColorBrewer")
-library("limma")
-
 
 MVA <-function(X,zakres,skala){
   if (isTRUE(skala)) mva.pairs(X[,zakres])
@@ -89,7 +81,7 @@ DEN <- function(x,zakres,skala){
   } else if (!isTRUE(scale)) {
     EXP<-Expression
   }
-  densityplot(~EXP|Sample, df, plot.points=FALSE, ylab = "density", xlab="intensity")
+  densityplot(~EXP|Sample, df, plot.points=FALSE, maiin="density plot", ylab = "density", xlab="intensity")
   legend(c(Sample))
 }
 

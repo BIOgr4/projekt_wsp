@@ -2,6 +2,7 @@ source("F1M.R") #kontrola jakosci
 source("filtracja2.R") # filtracja
 source("Random_Forest.R") # klasyfikacja
 source("biblioteki.R") # biblioteki
+source("Klasteryzacja.R") # klasteryzacja
 
 options(shiny.maxRequestSize = 500*1024^2)
 shinyServer(function(input, output, session){
@@ -128,14 +129,37 @@ shinyServer(function(input, output, session){
         ################################### Clasterization  ############################################
         else if (input$menu == "clast") {
           
+          observeEvent(input$startK, {
+            browser()
+            output$plot_clast <- renderPlot({
+              
+              if(input$clust_type == "K-means"){
+                Funkcja(exprs(dataFiltered()),input$num_clast)
+              } else if(input$clust_type == "Hierarchiczna"){
+                
+                Cluster_function(dataFiltered(), input$num_clast)
+                
+              }
+            })
+            
+            output$table_clust <- renderTable({
+              Cluster_function(dataFiltered(), input$num_clast)
+            }, include.rownames=TRUE)
+          })
+          
+          observeEvent(input$stopK, {
+            output$plot_clast <- renderPlot({
+              return()
+            })
+            output$table_clust <- renderTable({
+              return()
+            })
+            
+          })
+          
         }
       }
-   
-  
   })
- 
-  
   ######################################### Download ############################################  
-  
   
 })

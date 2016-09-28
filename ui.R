@@ -48,8 +48,20 @@ shinyUI(fluidPage(
           column(4, selectInput("type", label="Rodzaj klasyfikacji:",
                                         choices = c("DRZEWA LOSOWE"), 
                                         selected="DRZEWA LOSOWE")),    
-          column(8, plotOutput("forests", height = "600px")))
+          column(8, plotOutput("forests", height = "600px"))),
       
+      
+      conditionalPanel(condition="input.menu == 'clast'",
+          column(6,           selectInput("clust_type", label = "Rodzaj klasteryzacji:",
+                                          choices = c("K-means", "Hierarchiczna"), selected = "K-means"),
+                              sliderInput("num_clast", label = "Ilość klas:",
+                                          min = 2, max = 4, value = 1),
+                              actionButton("startK", "Go!"), actionButton("stopK", "Stop")),
+                       
+                       
+          column(12, plotOutput("plot_clast")),
+          conditionalPanel(condition="input.clust_type == 'Hierarchiczna'",
+          column(12, tableOutput("table_clust"))))
 
 )
 ))
